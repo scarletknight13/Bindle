@@ -1,3 +1,4 @@
+
 const tiles = document.querySelector('.tile-div');
 const keyboard = document.querySelector('.keyboard');
 const messageDiv = document.querySelector('.message-div');
@@ -62,20 +63,31 @@ function deleteLetter(){
 function checkWord(){
     if(currCol === 5){
         currGuess = guesses[currRow].join('');
-        console.log(`Current guess is ${currGuess}, wordle is ${correctWord}`);
-        flip();
-        if(correctWord === currGuess){
-            showMessage('Magnificent');
-        }
-        else{
-            if(currRow >= 5){
-                gameOver = true;
-                showMessage('Game Over');
-                return
-            }
-            currRow++;
-            currCol = 0;
-        }
+        fetch(`http://localhost:8000/check/?word=${currGuess}`)
+            .then(response => response.json())
+            .then(json => {
+                console.log(json);
+                if(json === 'Entry word not found'){
+                    showMessage('Invalid Word');
+                    return;
+                }
+                else{
+                    flip();
+                    if(correctWord === currGuess){
+                        showMessage('Magnificent');
+                    }
+                    else{
+                        if(currRow >= 5){
+                            gameOver = true;
+                            showMessage('Game Over');
+                            return
+                        }
+                        currRow++;
+                        currCol = 0;
+                    }
+                }
+            }).catch(err => console.log(err))
+      
     }
 }
 function flip(){
